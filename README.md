@@ -51,6 +51,8 @@ You might also want to check out the [real-world Laravel example application](ht
 
 [Other good practices](#other-good-practices)
 
+## Architecture
+
 ### **Single responsibility principle**
 
 A class should have only one responsibility.
@@ -174,46 +176,46 @@ class Client extends Model
     }
 }
 ```
-
 [🔝 Back to contents](#contents)
 
-### **Validation**
+### **Don't repeat yourself (DRY)**
 
-Move validation from controllers to Request classes.
+Reuse code when you can. SRP is helping you to avoid duplication. Also, reuse Blade templates, use Eloquent scopes etc.
 
 Bad:
 
 ```php
-public function store(Request $request)
+public function getActive()
 {
-    $request->validate([
-        'title' => 'required|unique:posts|max:255',
-        'body' => 'required',
-        'publish_at' => 'nullable|date',
-    ]);
+    return $this->where('verified', 1)->whereNotNull('deleted_at')->get();
+}
 
-    ...
+public function getArticles()
+{
+    return $this->whereHas('user', function ($q) {
+            $q->where('verified', 1)->whereNotNull('deleted_at');
+        })->get();
 }
 ```
 
 Good:
 
 ```php
-public function store(PostRequest $request)
+public function scopeActive($q)
 {
-    ...
+    return $q->where('verified', true)->whereNotNull('deleted_at');
 }
 
-class PostRequest extends Request
+public function getActive(): Collection
 {
-    public function rules(): array
-    {
-        return [
-            'title' => 'required|unique:posts|max:255',
-            'body' => 'required',
-            'publish_at' => 'nullable|date',
-        ];
-    }
+    return $this->active()->get();
+}
+
+public function getArticles(): Collection
+{
+    return $this->whereHas('user', function ($q) {
+            $q->active();
+        })->get();
 }
 ```
 
@@ -259,48 +261,53 @@ class ArticleService
 
 [🔝 Back to contents](#contents)
 
-### **Don't repeat yourself (DRY)**
 
-Reuse code when you can. SRP is helping you to avoid duplication. Also, reuse Blade templates, use Eloquent scopes etc.
+
+## Implementation
+
+
+### **Validation**
+
+Move validation from controllers to Request classes.
 
 Bad:
 
 ```php
-public function getActive()
+public function store(Request $request)
 {
-    return $this->where('verified', 1)->whereNotNull('deleted_at')->get();
-}
+    $request->validate([
+        'title' => 'required|unique:posts|max:255',
+        'body' => 'required',
+        'publish_at' => 'nullable|date',
+    ]);
 
-public function getArticles()
-{
-    return $this->whereHas('user', function ($q) {
-            $q->where('verified', 1)->whereNotNull('deleted_at');
-        })->get();
+    ...
 }
 ```
 
 Good:
 
 ```php
-public function scopeActive($q)
+public function store(PostRequest $request)
 {
-    return $q->where('verified', true)->whereNotNull('deleted_at');
+    ...
 }
 
-public function getActive(): Collection
+class PostRequest extends Request
 {
-    return $this->active()->get();
-}
-
-public function getArticles(): Collection
-{
-    return $this->whereHas('user', function ($q) {
-            $q->active();
-        })->get();
+    public function rules(): array
+    {
+        return [
+            'title' => 'required|unique:posts|max:255',
+            'body' => 'required',
+            'publish_at' => 'nullable|date',
+        ];
+    }
 }
 ```
 
 [🔝 Back to contents](#contents)
+
 
 ### **Prefer to use Eloquent over using Query Builder and raw SQL queries. Prefer collections over arrays**
 
@@ -400,6 +407,80 @@ $this->chunk(500, function ($users) {
 
 [🔝 Back to contents](#contents)
 
+### **Use IoC / Service container instead of new Class**
+
+new Class syntax creates tight coupling between classes and complicates testing. Use IoC container or facades instead.
+
+Bad:
+
+```php
+$user = new User;
+$user->create($request->validated());
+```
+
+Good:
+
+```php
+public function __construct(protected User $user) {}
+...
+
+$this->user->create($request->validated());
+```
+
+[🔝 Back to contents](#contents)
+
+### **Do not get data from the `.env` file directly**
+
+Pass the data to config files instead and then use the `config()` helper function to use the data in an application.
+
+Bad:
+
+```php
+$apiKey = env('API_KEY');
+```
+
+Good:
+
+```php
+// config/api.php
+'key' => env('API_KEY'),
+
+// Use the data
+$apiKey = config('api.key');
+```
+
+[🔝 Back to contents](#contents)
+
+### **Store dates in the standard format. Use accessors and mutators to modify date format**
+
+A date as a string is less reliable than an object instance, e.g. a Carbon-instance. It's recommended to pass Carbon objects between classes instead of date strings. Rendering should be done in the display layer (templates):
+
+Bad:
+
+```php
+{{ Carbon::createFromFormat('Y-d-m H-i', $object->ordered_at)->toDateString() }}
+{{ Carbon::createFromFormat('Y-d-m H-i', $object->ordered_at)->format('m-d') }}
+```
+
+Good:
+
+```php
+// Model
+protected $casts = [
+    'ordered_at' => 'datetime',
+];
+
+// Blade view
+{{ $object->ordered_at->toDateString() }}
+{{ $object->ordered_at->format('m-d') }}
+```
+
+[🔝 Back to contents](#contents)
+
+
+## Code formating and Style
+
+
 ### **Prefer descriptive method and variable names over comments**
 
 Bad:
@@ -468,34 +549,6 @@ public function isNormal()
 
 return back()->with('message', __('app.article_added'));
 ```
-
-[🔝 Back to contents](#contents)
-
-### **Use standard Laravel tools accepted by community**
-
-Prefer to use built-in Laravel functionality and community packages instead of using 3rd party packages and tools. Any developer who will work with your app in the future will need to learn new tools. Also, chances to get help from the Laravel community are significantly lower when you're using a 3rd party package or tool. Do not make your client pay for that.
-
-Task | Standard tools | 3rd party tools
------------- | ------------- | -------------
-Authorization | Policies | Entrust, Sentinel and other packages
-Compiling assets | Laravel Mix, Vite | Grunt, Gulp, 3rd party packages
-Development Environment | Laravel Sail, Homestead | Docker
-Deployment | Laravel Forge | Deployer and other solutions
-Unit testing | PHPUnit, Mockery | Phpspec, Pest
-Browser testing | Laravel Dusk | Codeception
-DB | Eloquent | SQL, Doctrine
-Templates | Blade | Twig
-Working with data | Laravel collections | Arrays
-Form validation | Request classes | 3rd party packages, validation in controller
-Authentication | Built-in | 3rd party packages, your own solution
-API authentication | Laravel Passport, Laravel Sanctum | 3rd party JWT and OAuth packages
-Creating API | Built-in | Dingo API and similar packages
-Working with DB structure | Migrations | Working with DB structure directly
-Localization | Built-in | 3rd party packages
-Realtime user interfaces | Laravel Echo, Pusher | 3rd party packages and working with WebSockets directly
-Generating testing data | Seeder classes, Model Factories, Faker | Creating testing data manually
-Task scheduling | Laravel Task Scheduler | Scripts and 3rd party packages
-DB | MySQL, PostgreSQL, SQLite, SQL Server | MongoDB
 
 [🔝 Back to contents](#contents)
 
@@ -580,118 +633,46 @@ class Customer extends Model
 
 ### **Use shorter and more readable syntax where possible**
 
+
 Bad:
 
 ```php
-$request->session()->get('cart');
 $request->input('name');
 ```
 
 Good:
 
 ```php
-session('cart');
 $request->name;
 ```
 
 More examples:
 
-Do not couple your code with Laravel shortcuts
+Bad | Good
 ------------ | -------------
-`session('cart')` | `Session::get('cart')`
-`session(['cart' => $data])` |  `Session::put('cart', $data)`
-`now(), today()` | `Carbon::now(), Carbon::today()`
-`app('Class')` | `App::make('Class')`
-//todo:
 `$request->input('name'), Request::get('name')` | `$request->name`
-`return Redirect::back()` | `return back()`
-`is_null($object->relation) ? null : $object->relation->id` | `optional($object->relation)->id` (in PHP 8: `$object->relation?->id`)
-`return view('index')->with('title', $title)->with('client', $client)` | `return view('index', compact('title', 'client'))`
+`is_null($object->relation) ? null : $object->relation->id` | `$object->relation?->id`
 `$request->has('value') ? $request->value : 'default';` | `$request->get('value', 'default')`
-
-
-`->where('column', '=', 1)` | `->where('column', 1)`
 `->orderBy('created_at', 'desc')` | `->latest()`
 `->orderBy('age', 'desc')` | `->latest('age')`
 `->orderBy('created_at', 'asc')` | `->oldest()`
 `->select('id', 'name')->get()` | `->get(['id', 'name'])`
 `->first()->name` | `->value('name')`
 
-[🔝 Back to contents](#contents)
+### BUT: do not couple your code with Laravel shortcuts
 
-### **Use IoC / Service container instead of new Class**
+Bad | Good
+------------ | -------------
+`session('cart')` | `Session::get('cart')`
+`session(['cart' => $data])` |  `Session::put('cart', $data)`
+`now(), today()` | `Carbon::now(), Carbon::today()`
+`app('Class')` | `App::make('Class')`
+`return back()` | `return Redirect::back()`
+`->where('column', 1)` | `->where('column', '=', 1)`
 
-new Class syntax creates tight coupling between classes and complicates testing. Use IoC container or facades instead.
-
-Bad:
-
-```php
-$user = new User;
-$user->create($request->validated());
-```
-
-Good:
-
-```php
-public function __construct(User $user)
-{
-    $this->user = $user;
-}
-
-...
-
-$this->user->create($request->validated());
-```
 
 [🔝 Back to contents](#contents)
 
-### **Do not get data from the `.env` file directly**
-
-Pass the data to config files instead and then use the `config()` helper function to use the data in an application.
-
-Bad:
-
-```php
-$apiKey = env('API_KEY');
-```
-
-Good:
-
-```php
-// config/api.php
-'key' => env('API_KEY'),
-
-// Use the data
-$apiKey = config('api.key');
-```
-
-[🔝 Back to contents](#contents)
-
-### **Store dates in the standard format. Use accessors and mutators to modify date format**
-
-A date as a string is less reliable than an object instance, e.g. a Carbon-instance. It's recommended to pass Carbon objects between classes instead of date strings. Rendering should be done in the display layer (templates):
-
-Bad:
-
-```php
-{{ Carbon::createFromFormat('Y-d-m H-i', $object->ordered_at)->toDateString() }}
-{{ Carbon::createFromFormat('Y-d-m H-i', $object->ordered_at)->format('m-d') }}
-```
-
-Good:
-
-```php
-// Model
-protected $casts = [
-    'ordered_at' => 'datetime',
-];
-
-// Blade view
-{{ $object->ordered_at->toDateString() }}
-{{ $object->ordered_at->format('m-d') }}
-```
-
-[🔝 Back to contents](#contents)
 
 ### **Do not use DocBlocks**
 
@@ -728,10 +709,40 @@ public function isValidAsciiString(string $string): bool
 
 [🔝 Back to contents](#contents)
 
+
+
+## Other
+
+### **Use standard Laravel tools accepted by community**
+
+Prefer to use built-in Laravel functionality and community packages instead of using 3rd party packages and tools. Any developer who will work with your app in the future will need to learn new tools. Also, chances to get help from the Laravel community are significantly lower when you're using a 3rd party package or tool. Do not make your client pay for that.
+
+Task | Standard tools | 3rd party tools
+------------ | ------------- | -------------
+Authorization | Policies | Entrust, Sentinel and other packages
+Compiling assets | Laravel Mix, Vite | Grunt, Gulp, 3rd party packages
+Development Environment | Laravel Sail, Homestead | Docker
+Deployment | Laravel Forge | Deployer and other solutions
+Unit testing | PHPUnit, Mockery | Phpspec, Pest
+Browser testing | Laravel Dusk | Codeception
+DB | Eloquent | SQL, Doctrine
+Templates | Blade | Twig
+Working with data | Laravel collections | Arrays
+Form validation | Request classes | 3rd party packages, validation in controller
+Authentication | Built-in | 3rd party packages, your own solution
+API authentication | Laravel Passport, Laravel Sanctum | 3rd party JWT and OAuth packages
+Creating API | Built-in | Dingo API and similar packages
+Working with DB structure | Migrations | Working with DB structure directly
+Localization | Built-in | 3rd party packages
+Realtime user interfaces | Laravel Echo, Pusher | 3rd party packages and working with WebSockets directly
+Generating testing data | Seeder classes, Model Factories, Faker | Creating testing data manually
+Task scheduling | Laravel Task Scheduler | Scripts and 3rd party packages
+DB | MySQL, PostgreSQL, SQLite, SQL Server | MongoDB
+
+[🔝 Back to contents](#contents)
+
+
 ### **Other good practices**
-
-Avoid using patterns and tools that are alien to Laravel and similar frameworks (i.e. RoR, Django). If you like Symfony (or Spring) approach for building apps, it's a good idea to use these frameworks instead.
-
 Never put any logic in routes files.
 
 Minimize usage of vanilla PHP in Blade templates.
