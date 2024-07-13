@@ -137,9 +137,11 @@ public function getFullNameShort(): string
 
 [🔝 Back to contents](#contents)
 
-### **Fat models, skinny controllers**
+### **Avoid framework coupling when possible**
+Keep your code as abstract as possible. Avoid unnecessary framework coupling. There is life after Laravel.
 
-Put all DB related logic into Eloquent models.
+### **Fat repositories, skinny controllers**
+Put all DB related logic into repositories and keep your Eloquent models dumb. Repositories remove ORM coupling and prevent polluting the models. You will thank yourself if you ever wish to replace Eloquent with another ORM.
 
 Bad:
 
@@ -161,14 +163,16 @@ Good:
 ```php
 public function index()
 {
-    return view('index', ['clients' => $this->client->getWithNewOrders()]);
+    return view('index', ['clients' => $this->clientRepository->getWithNewOrders()]);
 }
 
-class Client extends Model
+class ClientRepository
 {
+    public function __construct(protected Client $model): void {}
+    
     public function getWithNewOrders(): Collection
     {
-        return $this->verified()
+        return $this->model->verified()
             ->with(['orders' => function ($q) {
                 $q->where('created_at', '>', Carbon::today()->subWeek());
             }])
@@ -180,7 +184,8 @@ class Client extends Model
 
 ### **Don't repeat yourself (DRY)**
 
-Reuse code when you can. SRP is helping you to avoid duplication. Also, reuse Blade templates, use Eloquent scopes etc.
+Reuse code when you can. SRP is helping you to avoid duplication. 
+Also, reuse Blade templates, use Eloquent scopes etc.
 
 Bad:
 
