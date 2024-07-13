@@ -2,55 +2,6 @@
 
 You might also want to check out the [real-world Laravel example application](https://github.com/alexeymezenin/laravel-realworld-example-app) and [Eloquent SQL reference](https://github.com/alexeymezenin/eloquent-sql-reference)
 
-Translations:
-
-[Nederlands](https://github.com/Protoqol/Beste-Laravel-Praktijken) (by [Protoqol](https://github.com/Protoqol))
-
-[Indonesia](indonesia.md) (by [P0rguy](https://github.com/p0rguy), [Doni Ahmad](https://github.com/donyahmd))
-
-[한국어](https://github.com/xotrs/laravel-best-practices) (by [cherrypick](https://github.com/xotrs))
-
-[日本語](japanese.md) (by [2bo](https://github.com/2bo))
-
-[简体中文](chinese.md) (by [xiaoyi](https://github.com/Shiloh520))
-
-[繁體中文](traditional-chinese.md) (by [woeichern](https://github.com/woeichern))
-
-[ภาษาไทย](thai.md) (by [kongvut sangkla](https://github.com/kongvut))
-
-[বাংলা](bangla.md) (by [Anowar Hossain](https://github.com/AnowarCST))
-
-[فارسی](persian.md) (by [amirhossein baghaie](https://github.com/ohmydevops))
-
-[Português](https://github.com/jonaselan/laravel-best-practices) (by [jonaselan](https://github.com/jonaselan))
-
-[Українська](ukrainian.md) (by [Tenevyk](https://github.com/tenevyk))
-
-[Русский](russian.md)
-
-[Tiếng Việt](https://chungnguyen.xyz/posts/code-laravel-lam-sao-cho-chuan) (by [Chung Nguyễn](https://github.com/nguyentranchung))
-
-[Español](spanish.md) (by [César Escudero](https://github.com/cedaesca))
-
-[Français](french.md) (by [Mikayil S.](https://github.com/mikayilsrt))
-
-[Polski](polish.md) (by [Karol Pietruszka](https://github.com/pietrushek))
-
-[Română](romanian.md) (by [als698](https://github.com/als698))
-
-[Türkçe](turkish.md) (by [Burak](https://github.com/ikidnapmyself))
-
-[Deutsch](german.md) (by [Sujal Patel](https://github.com/sujalpatel2209))
-
-[Italiana](italian.md) (by [Sujal Patel](https://github.com/sujalpatel2209))
-
-[Azərbaycanca](https://github.com/Maharramoff/laravel-best-practices-az) (by [Maharramoff](https://github.com/Maharramoff))
-
-[العربية](arabic.md) (by [ahmedsaoud31](https://github.com/ahmedsaoud31))
-
-[اردو](urdu.md) (by [RizwanAshraf1](https://github.com/RizwanAshraf1))
-
-[မြန်မာဘာသာ](burmese.md) (by[Kaung Zay Yan](https://github.com/KaungZayY))
 
 [![Laravel example app](/images/laravel-real-world-banner.png?raw=true)](https://github.com/alexeymezenin/laravel-realworld-example-app)
 
@@ -645,18 +596,20 @@ $request->name;
 
 More examples:
 
-Common syntax | Shorter and more readable syntax
+Do not couple your code with Laravel shortcuts
 ------------ | -------------
-`Session::get('cart')` | `session('cart')`
-`$request->session()->get('cart')` | `session('cart')`
-`Session::put('cart', $data)` | `session(['cart' => $data])`
-`$request->input('name'), Request::get('name')` | `$request->name, request('name')`
+`session('cart')` | `Session::get('cart')`
+`session(['cart' => $data])` |  `Session::put('cart', $data)`
+`now(), today()` | `Carbon::now(), Carbon::today()`
+`app('Class')` | `App::make('Class')`
+//todo:
+`$request->input('name'), Request::get('name')` | `$request->name`
 `return Redirect::back()` | `return back()`
 `is_null($object->relation) ? null : $object->relation->id` | `optional($object->relation)->id` (in PHP 8: `$object->relation?->id`)
 `return view('index')->with('title', $title)->with('client', $client)` | `return view('index', compact('title', 'client'))`
 `$request->has('value') ? $request->value : 'default';` | `$request->get('value', 'default')`
-`Carbon::now(), Carbon::today()` | `now(), today()`
-`App::make('Class')` | `app('Class')`
+
+
 `->where('column', '=', 1)` | `->where('column', 1)`
 `->orderBy('created_at', 'desc')` | `->latest()`
 `->orderBy('age', 'desc')` | `->latest('age')`
