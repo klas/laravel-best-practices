@@ -141,7 +141,8 @@ public function getFullNameShort(): string
 Keep your code as abstract as possible. Avoid unnecessary framework coupling. There is life after Laravel.
 
 ### **Fat repositories, skinny controllers**
-Put all DB related logic into repositories and keep your Eloquent models dumb. Repositories remove ORM coupling and prevent polluting the models. You will thank yourself if you ever wish to replace Eloquent with another ORM.
+Put all DB related logic into repositories and keep your Eloquent models dumb. Fat models violate SRP.
+Repositories also remove ORM coupling and prevent you from polluting the models. You will thank yourself if you ever wish to replace Eloquent with another ORM.
 
 Bad:
 
