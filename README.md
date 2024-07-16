@@ -1,7 +1,8 @@
 ![Laravel best practices](/images/logo-english.png?raw=true)
-Practical coders pocket guide to building Laravel and PHP applications
+**Practical coders pocket guide to building Laravel and PHP applications**
 
-In constant reworking. Inspired by alexeymezenin/laravel-best-practices - but heavily modified to fix architectural mistakes
+In constant reworking. Inspired by alexeymezenin/laravel-best-practices - but heavily modified to fix architectural mistakes.
+
 An example application (in the making!) https://github.com/klas/laravel-playground
 
 
