@@ -1,9 +1,7 @@
 ![Laravel best practices](/images/logo-english.png?raw=true)
 
-You might also want to check out the [real-world Laravel example application](https://github.com/alexeymezenin/laravel-realworld-example-app) and [Eloquent SQL reference](https://github.com/alexeymezenin/eloquent-sql-reference)
+An example application (in the making!) https://github.com/klas/laravel-playground
 
-
-[![Laravel example app](/images/laravel-real-world-banner.png?raw=true)](https://github.com/alexeymezenin/laravel-realworld-example-app)
 
 ## Contents
 
@@ -53,9 +51,15 @@ You might also want to check out the [real-world Laravel example application](ht
 
 ## Architecture
 
-### **Single responsibility principle**
+### Design Patterns
+Learn about design patterns and use them. A good resource https://refactoring.guru/design-patterns/catalog
+Without knowing them it is unpossible to work with any modern framework.
 
-A class should have only one responsibility.
+### SOLID
+SOLID principles are the basis you should build on. A good point to start is Clean Architecture by Robert C. Martin. 
+
+### **Single responsibility principle**
+A class should have only one responsibility. Keep classes simple and focused.
 
 Bad:
 
@@ -485,9 +489,13 @@ protected $casts = [
 
 
 ## Code formating and Style
+**DO use code style checker and formatter.**
+
+PSR-2 is the standard to follow in Laravel. PHPStorm has built-in Laravel Code style.
+It is also very helpful to install and use Laravel Pint, it will format your code on the fly https://laravel.com/docs/pint
 
 
-### **Prefer descriptive method and variable names over comments**
+### Prefer descriptive method and variable names over comments
 
 Bad:
 
@@ -504,7 +512,7 @@ if ($this->hasJoins())
 
 [🔝 Back to contents](#contents)
 
-### **Do not put JS and CSS in Blade templates and do not put any HTML in PHP classes**
+### Do not put JS and CSS in Blade templates and do not put any HTML in PHP classes
 
 Bad:
 
