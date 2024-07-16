@@ -7,10 +7,10 @@ An example application (in the making!) https://github.com/klas/laravel-playgrou
 
 
 ## Contents
-* [Architecture](#Architecture) 
-* [Implementation](#Implementation)
-* [Code formating and Style](#Code formating and Style)
-* [Other](#Other)
+* [Architecture](#architecture) 
+* [Implementation](#implementation)
+* [Code formating and Style](#code-formating-and-style)
+* [Other](#other)
 
 
 ## Architecture
