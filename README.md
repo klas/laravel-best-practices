@@ -20,9 +20,11 @@ Learn about design patterns and use them. A good resource https://refactoring.gu
 Without knowing them it is unpossible to work with any modern framework.
 
 ### SOLID
-SOLID principles are the basis you should build on. A good point to start is Clean Architecture by Robert C. Martin. 
+SOLID principles are the basis you should build on. A good point to start is Clean Architecture by Robert C. Martin.
+https://en.wikipedia.org/wiki/SOLID
 
 ### **Single responsibility principle**
+(S in SOLID)
 A class should have only one responsibility. Keep classes simple and focused.
 
 Bad:
