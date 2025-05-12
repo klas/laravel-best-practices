@@ -655,6 +655,36 @@ Bad | Good
 
 [🔝 Back to contents](#contents)
 
+### **Use modern PHP 8+ features**
+* Constructor property promotion (PHP 8.0): properties are declared and assigned within the constructor signature itself.  
+* Readonly properties and classes (PHP 8.1, 8.2): ensure immutability for safer code. 
+* Enums (PHP 8.1): define a set of named constants for better type safety. 
+* Standalone types (PHP 8.4): use true, false, and null as standalone types. 
+* Property hooks (PHP 8.4)
+* Asymmetric visibility (PHP 8.4)
+* Named arguments (PHP 8.0): improve code readability by specifying argument names e.g. array_fill(start_index: 0, count: 100, value: 50);
+
+
+Bad:
+
+```php
+protected int $x;
+protected int $y = 0;
+
+public function __construct(int $x, int $y = 0) {
+    $this->x = $x;
+    $this->y = $y;
+}
+```
+
+Good:
+
+```php
+public function __construct(protected int $x, protected int $y = 0) {
+}
+```
+
+[🔝 Back to contents](#contents)
 
 ### **Do NOT use DocBlocks**
 
@@ -725,16 +755,11 @@ DB | MySQL, PostgreSQL, SQLite, SQL Server | MongoDB
 
 
 ### **Other good practices**
-Never put any logic in routes files.
-
-Minimize usage of vanilla PHP in Blade templates.
-
-Use in-memory DB for testing.
-
-Do not override standard framework features to avoid problems related to updating the framework version and many other issues.
-
-Use modern PHP syntax where possible, but don't forget about readability.
-
-Avoid using View Composers and similar tools unless you really know what you're doing. In most cases, there is a better way to solve the problem.
+* Never put any logic in routes files. 
+* Minimize usage of vanilla PHP in Blade templates. 
+* Use in-memory DB for testing. 
+* Do not override standard framework features to avoid problems related to updating the framework version and many other issues. 
+* Use modern PHP syntax where possible, but don't forget about readability. 
+* Avoid using View Composers and similar tools unless you really know what you're doing. In most cases, there is a better way to solve the problem.
 
 [🔝 Back to contents](#contents)
