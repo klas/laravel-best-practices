@@ -3,7 +3,9 @@
 
 In constant reworking. Inspired by alexeymezenin/laravel-best-practices - but heavily modified to adjust for architectural issues.
 
-An example application (in the making!) https://github.com/klas/laravel-playground
+Example applications (in constant reworkig):
+* https://github.com/klas/Agent-ID-resolver-component
+* https://github.com/klas/laravel-playground
 
 
 ## Contents
@@ -25,7 +27,7 @@ https://en.wikipedia.org/wiki/SOLID
 
 ### **Single responsibility principle**
 (S in SOLID)
-A class should have only one responsibility. Keep classes simple and focused.
+A sowftware component should have only one responsibility. Keep classes simple and focused. As most of the time this principle is understood completely wrong, please read https://medium.com/@klas_92714/the-srp-delusion-why-you-are-most-likely-getting-single-responsibility-principle-dead-wrong-adc71512d84c
 
 Bad:
 
@@ -654,7 +656,7 @@ Bad | Good
 [🔝 Back to contents](#contents)
 
 
-### **Do not use DocBlocks**
+### **Do NOT use DocBlocks**
 
 DocBlocks reduce readability. Use a descriptive method name and modern PHP features like return type hints instead.
 
@@ -664,7 +666,7 @@ Bad:
 /**
  * The function checks if given string is a valid ASCII string
  *
- * @param string $string String we get from frontend which might contain
+ * @param string $string String we get from the frontend which might contain
  *                       illegal characters. Returns True is the string
  *                       is valid.
  *
@@ -693,7 +695,7 @@ public function isValidAsciiString(string $string): bool
 
 ## Other
 
-### **Use standard Laravel tools accepted by community**
+### **Use standard Laravel tools accepted by the community**
 
 Prefer to use built-in Laravel functionality and community packages instead of using 3rd party packages and tools. Any developer who will work with your app in the future will need to learn new tools. Also, chances to get help from the Laravel community are significantly lower when you're using a 3rd party package or tool. Do not make your client pay for that.
 
