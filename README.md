@@ -18,16 +18,22 @@ Example applications (in constant reworkig):
 ## Architecture
 
 ### Design Patterns
-Learn about design patterns and use them. A good resource https://refactoring.guru/design-patterns/catalog
-Without knowing them it is unpossible to work with any modern framework.
+Learn about design patterns and use them. Without knowing design patterns it is unpossible to work with any modern framework.
+
+A very good resource for learning with visual representations:
+https://refactoring.guru/design-patterns/catalog
+
 
 ### SOLID
 SOLID principles are the basis you should build on. A good point to start is Clean Architecture by Robert C. Martin.
-https://en.wikipedia.org/wiki/SOLID
+Quick jump-in: https://en.wikipedia.org/wiki/SOLID
 
 ### **Single responsibility principle**
 (S in SOLID)
-A sowftware component should have only one responsibility. Keep classes simple and focused. As most of the time this principle is understood completely wrong, please read https://medium.com/@klas_92714/the-srp-delusion-why-you-are-most-likely-getting-single-responsibility-principle-dead-wrong-adc71512d84c
+A sowftware component should have only one responsibility. Keep classes simple and focused. 
+
+Please read https://medium.com/@klas_92714/the-srp-delusion-why-you-are-most-likely-getting-single-responsibility-principle-dead-wrong-adc71512d84c
+- most of the time this principle is understood completely wrong,
 
 Bad:
 
@@ -113,7 +119,7 @@ public function getFullNameShort(): string
 Keep your code as abstract as possible. Avoid unnecessary framework coupling. There is life after Laravel.
 
 ### **Fat repositories, skinny controllers**
-Put all DB related logic into repositories and keep your Eloquent models dumb. Fat models violate SRP.
+Put all DB related logic into repositories and keep your Eloquent models dumb. Put your business logic into services. Fat models violate SRP.
 Repositories also remove ORM coupling and prevent you from polluting the models. You will thank yourself if you ever wish to replace Eloquent with another ORM.
 
 Bad:
